@@ -1,0 +1,5 @@
+export RS_USERNAME=""
+export RS_API_KEY=""
+export RS_PUBLIC_KEY="~/.ssh/id_rsa.pub" 
+export RS_PRIVATE_KEY="~/.ssh/id_rsa" 
+export VAGRANT_DEFAULT_PROVIDER="rackspace"

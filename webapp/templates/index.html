@@ -1,0 +1,97 @@
+{% extends "bootstrap_responsive.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block body_content %}
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">JiffyLab</a>
+          {% if g.user %}
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#about" data-toggle="tab">About</a></li>
+              <li><a href="#ipynb" data-toggle="tab">IPython Notebook</a></li>
+              <li><a href="#shell" data-toggle="tab">Shell</a></li>
+              <li><a href="/logout">Signout {{ g.user }}</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      {% if g.user %}
+
+        <div class="tabbable">
+           <div class="tab-content">
+               <div id="about" class="tab-pane active">
+      <div class="hero-unit">
+        <h1>Welcome</h1>
+        <p>This tool provides web based interactive interfaces for learning Python and the shell</p>
+        <p>Each email that logs in will create a completely sandboxed environment for you to experiment with</p>
+      </div>
+                   </div>
+               <div id="ipynb" class="tab-pane">
+                {% if container %}
+                <iframe id="ipynb-frame" src="" seamless width=100% height=500px>
+                        <p>Your browser does not support iframes.</p>
+                    </iframe>
+                        {% else %}
+                        <p>no container available</p>
+                {% endif %}
+               </div>
+
+               <div id="shell" class="tab-pane">
+                    {% if container %}
+                    <div id="terminal-intro"> This tool provides a web based shell
+                        terminal - it will launch in its own window.  </div> <div>
+
+                        <a id="terminal-link" href="" target="_blank">Launch the shell terminal</a> </div>
+
+                {# turns out iframes are currently just too problematic
+                <iframe src="http://{{ serviceshost }}:{{ container.portmap.4200 }}" seamless width=900px% height=500px>
+                            <p>Your browser does not support iframes.</p>
+                        </iframe>
+                #}
+                        {% else %}
+                        <p>no container available</p>
+                    {% endif %}
+
+                </div>
+           </div>
+        </div>
+
+      {% else %}
+            <form class="form form-horizontal" method="post">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_errors(form, False) }}
+
+            {{ wtf.horizontal_field(form.email) }}
+
+            <div class="form-actions">
+               <button name="action_save" type="submit" class="btn btn-primary">Get Started</button>
+            </div>
+          </form>
+    {% endif %}
+    </div>
+
+{% endblock %}
+{% block bootstrap_js_bottom %}
+{{ super() }}
+    {% if container %}
+    <script>
+    $(function() {
+        var u = "http://" + document.location.hostname + ":{{ container.portmap.8888 }}";
+        $("#ipynb-frame").attr('src', u);
+        var termlink = "http://" + document.location.hostname + ":{{ container.portmap.4200 }}";
+        $("#terminal-link").attr('href', termlink);
+    });
+    </script>
+    {% endif %}
+{% endblock %}
