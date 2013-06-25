@@ -1,13 +1,15 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# this vagrant file specifies details for the virtualbox and rackspace
+# providers. See the linux-setup file for provisioning details.
+#
 BOX_NAME = ENV['BOX_NAME'] || "raring"
-BOX_URI = ENV['BOX_URI'] || "http://files.vagrantup.com/precise64.box"
-AWS_REGION = ENV['AWS_REGION'] || "us-east-1"
-AWS_AMI    = ENV['AWS_AMI']    || "ami-d0f89fb9"
+# BOX_URI = ENV['BOX_URI'] || "http://files.vagrantup.com/precise64.box"
+# AWS_REGION = ENV['AWS_REGION'] || "us-east-1"
+# AWS_AMI    = ENV['AWS_AMI']    || "ami-d0f89fb9"
 
 
-# Add X.org Ubuntu backported 3.8 kernel
 kernel_upgrade = "add-apt-repository -y ppa:ubuntu-x-swat/r-lts-backport; " \
       "apt-get update -qq; apt-get install -q -y linux-image-3.8.0-19-generic; shutdown -r +1;"
 

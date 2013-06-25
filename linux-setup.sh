@@ -1,3 +1,9 @@
+#!/bin/sh
+
+# This file should be run on the linux machine that will be running docker
+# it is set up as the provisioning file for vagrant images, but can be run
+# manually if you are not using vagrant
+
 sudo apt-get install -q -y curl
 curl get.docker.io | sudo sh -x
 sudo apt-get install -y -q python-all-dev
