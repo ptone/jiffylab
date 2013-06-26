@@ -63,6 +63,8 @@ Short Screencast
 
     <iframe width="560" height="315" src="http://www.youtube.com/embed/NkPO6nb9owE" frameborder="0" allowfullscreen></iframe>
 
+`Direct link if embedding disabled <http://www.youtube.com/embed/NkPO6nb9owE>`_
+
 Quickstart
 ----------
 
