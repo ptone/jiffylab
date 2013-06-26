@@ -13,7 +13,7 @@ The Problem
 Python is a wonderful first language, but sometimes introducing people to
 Python is bogged down by making sure that everyone has a usable development
 environment. This can often set a tone of frustration for beginners, as well as
-completely drain instructor and assistants time, instead of letting everyone
+completely drain instructor and assistant's time, instead of letting everyone
 "dive in".
 
 There are other advantages to having a standardized environment:
@@ -21,13 +21,13 @@ There are other advantages to having a standardized environment:
 * If the instructor is projecting the same thing as what the student sees, the
   student will be less likely to be thrown off by inconsequential details such
   as differences in the shell prompt (> vs $ etc), different syntax
-  highlighting colors, or use of some tool or feature not installed on the
+  highlighting colors, or the use of some tool or feature not installed on the
   student's machine.
 
 * When all students are using the same exact setup, they are more likely to be
-  capable of helping their neighbor, as if they got it working on their screen,
-  they can probably get it working on their neighbor - peers can more
-  effectively visually "diff" what might be different.
+  capable of helping their neighbor, because if they got it working on their
+  screen, they can probably get it working on their neighbor's - peers and
+  instructors can more effectively visually "diff" what might be different.
 
 * Even if the setup of a student machine goes smoothly at a technical level, it
   can still take time, especially if a significant number of material needs to
@@ -36,9 +36,9 @@ There are other advantages to having a standardized environment:
 Trade-offs
 ----------
 
-Messing around with tools and your machine setup is of course part of being
+Messing around with tools and your machine's setup is of course part of being
 a developer - learning how to manage your system and Python 'PATH', learning an
-editor, virtualenvs, pip etc all need to happen. But not in your first hour as
+editor, virtualenvs, pip etc all need to happen. But not in your first hours as
 a new developer.
 
 Another reason to have students work through the challenge of getting
@@ -52,9 +52,9 @@ working. So in the end I believe this trade-off is a bit of a red herring, as
 it is not about "either or", but "which comes first".
 
 Finally there is some advantage to working in a "tunneled" environment if the
-primary way you may interact with tools or data is remotely on a server
-cluster. When you have only learned with local GUI tools on hand, it can be
-a very difficult transition to doing things remotely.
+primary way you may interact with tools or data is remotely on a server. When
+you have only learned with the aid of local GUI tools on hand, it can be a very
+difficult transition to doing things remotely.
 
 Short Screencast
 ----------------
@@ -81,7 +81,7 @@ you can execute the steps in the linux-setup.sh file. This will install Docker,
 and some python tools, pull the base Docker images needed, and start the
 webapp. You can then connect on port 80 to that machine. It is recommended you
 not run this on a server also used for any "Very Important Things", but instead
-run it on some sort of VM.
+run it on some sort of VM on its own.
 
 Running on a Mac with Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,12 +90,13 @@ You will need Vagrant and Virtualbox (note use version 4.2.12, as of this writin
 has problems with Vagrant).
 
 cd into the jiffylab folder and just run ``vagrant up`` in a terminal. Note
-that with the raring image used, I found that Vagrant would hang on first boot.
-If you are stuck on "waiting for VM to boot" for more than several minutes,
-ctrl-C, then do a ``vagrant halt`` followed by another ``vagrant up``.
+that with the 'Ubuntu Raring' image used, I found that Vagrant would hang on
+first boot.  If you are stuck on "waiting for VM to boot" for more than several
+minutes, ctrl-C, then do a ``vagrant halt`` followed by another ``vagrant up``.
 
-If you had this stalling issue, vagrant may not have provisioned properly, so you will have to
-run the linux-setup script, which should be found at /vagrant/linux-setup.sh
+If you had this stalling issue, vagrant may not have provisioned properly, so
+you will have to run the linux-setup script, which should be found at
+/vagrant/linux-setup.sh
 
 Running on Rackspace with Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
