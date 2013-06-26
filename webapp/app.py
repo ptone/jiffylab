@@ -22,6 +22,7 @@ app.config['BOOTSTRAP_USE_CDN'] = True
 app.config['BOOTSTRAP_FONTAWESOME'] = True
 app.config['SECRET_KEY'] = 'devkey'
 
+CONTAINER_STORAGE = "/usr/local/etc/jiffylab/webapp/containers.json"
 SERVICES_HOST = '127.0.0.1'
 BASE_IMAGE = 'ptone/jiffylab-base'
 app.config.from_object(__name__)
@@ -71,11 +72,12 @@ def get_image(image_name=BASE_IMAGE):
 
 def lookup_container(name):
     # TODO should this be reset at startup?
-    if not os.path.exists('containers.json'):
+    container_store = app.config['CONTAINER_STORAGE']
+    if not os.path.exists(container_store):
         with lock:
-            json.dump({}, open('containers.json', 'wb'))
+            json.dump({}, open(container_store, 'wb'))
         return None
-    containers = json.load(open('containers.json', 'rb'))
+    containers = json.load(open(container_store, 'rb'))
     try:
         return containers[name]
     except KeyError:
@@ -83,24 +85,26 @@ def lookup_container(name):
 
 
 def remember_container(name, containerid):
+    container_store = app.config['CONTAINER_STORAGE']
     with lock:
-        if not os.path.exists('containers.json'):
+        if not os.path.exists(container_store):
             containers = {}
         else:
-            containers = json.load(open('containers.json', 'rb'))
+            containers = json.load(open(container_store, 'rb'))
         containers[name] = containerid
-        json.dump(containers, open('containers.json', 'wb'))
+        json.dump(containers, open(container_store, 'wb'))
 
 
 def forget_container(name):
+    container_store = app.config['CONTAINER_STORAGE']
     with lock:
-        if not os.path.exists('containers.json'):
+        if not os.path.exists(container_store):
             return False
         else:
-            containers = json.load(open('containers.json', 'rb'))
+            containers = json.load(open(container_store, 'rb'))
         try:
             del(containers[name])
-            json.dump(containers, open('containers.json', 'wb'))
+            json.dump(containers, open(container_store, 'wb'))
         except KeyError:
             return False
         return True
