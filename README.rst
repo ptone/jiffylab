@@ -19,14 +19,14 @@ completely drain instructor and assistants time, instead of letting everyone
 There are other advantages to having a standardized environment:
 
 * If the instructor is projecting the same thing as what the student sees, the
-  student will be less likely to be thown off by inconsequential details such
+  student will be less likely to be thrown off by inconsequential details such
   as differences in the shell prompt (> vs $ etc), different syntax
   highlighting colors, or use of some tool or feature not installed on the
   student's machine.
 
 * When all students are using the same exact setup, they are more likely to be
   capable of helping their neighbor, as if they got it working on their screen,
-  they can probably get it working on their neigbor - peers can more
+  they can probably get it working on their neighbor - peers can more
   effectively visually "diff" what might be different.
 
 * Even if the setup of a student machine goes smoothly at a technical level, it
@@ -89,7 +89,7 @@ Running on a Mac with Vagrant
 You will need Vagrant and Virtualbox (note use version 4.2.12, as of this writing, 4.2.14
 has problems with Vagrant).
 
-cd into the jiffyclub folder and just run ``vagrant up`` in a terminal. Note
+cd into the jiffylab folder and just run ``vagrant up`` in a terminal. Note
 that with the raring image used, I found that Vagrant would hang on first boot.
 If you are stuck on "waiting for VM to boot" for more than several minutes,
 ctrl-C, then do a ``vagrant halt`` followed by another ``vagrant up``.
