@@ -50,7 +50,8 @@
                <div id="shell" class="tab-pane">
                     {% if container %}
                     <div id="terminal-intro"> This tool provides a web based shell
-                        terminal - it will launch in its own window.  </div> <div>
+                        terminal - it will launch in its own window. <br>
+                        The username:password is:  user:secret</div> <div>
 
                         <a id="terminal-link" href="" target="_blank">Launch the shell terminal</a> </div>
 
@@ -68,6 +69,14 @@
         </div>
 
       {% else %}
+      <div>
+          This is an early prototype of a tool that allows you to interact with
+          a full linux system over a web page. The goal is to provide a fully
+          outfited learning environment using IPython notebook, and the Bash
+          shell without having to configure the student's machine. The email
+          provided is currently only used as a label for now, so you can enter
+          what you want.
+      </div>
             <form class="form form-horizontal" method="post">
             {{ form.hidden_tag() }}
             {{ wtf.form_errors(form, False) }}
