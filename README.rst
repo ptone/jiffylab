@@ -51,7 +51,17 @@ setting up, and will potentially have a greater motivation for getting it all
 working. So in the end I believe this trade-off is a bit of a red herring, as
 it is not about "either or", but "which comes first".
 
-TODO Learn to work on a server
+Finally there is some advantage to working in a "tunneled" environment if the
+primary way you may interact with tools or data is remotely on a server
+cluster. When you have only learned with local GUI tools on hand, it can be
+a very difficult transition to doing things remotely.
+
+Short Screencast
+----------------
+
+.. raw:: html
+
+    <iframe width="560" height="315" src="http://www.youtube.com/embed/NkPO6nb9owE" frameborder="0" allowfullscreen></iframe>
 
 Quickstart
 ----------
@@ -61,9 +71,50 @@ sandboxed environment through the use of linux containers (think lightweight,
 process level virtual machines). Note that this technology is Linux specific,
 so does NOT run on Mac OS X. You can run this quite effectively inside a Linux
 virtual machine using `vagrant <http://vagrantup.com>`_ (in fact, this project
-was developed on a Mac).
+was developed on a Mac). A simple Flask app runs on the same machine as Docker
+and uses the Docker remote API to create or restart containers as needed.
 
-# notes
+Once you have a linux machine setup (see below for more details on Vagrant),
+you can execute the steps in the linux-setup.sh file. This will install Docker,
+and some python tools, pull the base Docker images needed, and start the
+webapp. You can then connect on port 80 to that machine. It is recommended you
+not run this on a server also used for any "Very Important Things", but instead
+run it on some sort of VM.
 
-vagrant virtualbox stall on raring box
+Running on a Mac with Vagrant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+You will need Vagrant and Virtualbox (note use version 4.2.12, as of this writing, 4.2.14
+has problems with Vagrant).
+
+cd into the jiffyclub folder and just run ``vagrant up`` in a terminal. Note
+that with the raring image used, I found that Vagrant would hang on first boot.
+If you are stuck on "waiting for VM to boot" for more than several minutes,
+ctrl-C, then do a ``vagrant halt`` followed by another ``vagrant up``.
+
+If you had this stalling issue, vagrant may not have provisioned properly, so you will have to
+run the linux-setup script, which should be found at /vagrant/linux-setup.sh
+
+Running on Rackspace with Vagrant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You will need a an account and `API key
+<http://www.rackspace.com/knowledge_center/article/rackspace-cloud-essentials-1-generating-your-api-key-0>`_
+on `Rackspace <http://www.rackspace.com>`_. You will also need to install the
+vagrant rackspace plugin::
+
+    $ vagrant plugin install vagrant-rackspace
+    $ vagrant box add dummy https://github.com/mitchellh/vagrant-rackspace/raw/master/dummy.box
+
+You will need to set some environment variables for Rackspace - an easy way to
+do this is to follow the directions in ``rackspace-vagrant-env.sh``, fill out
+your information, then::
+
+    $ source rackspace-vagrant-env.sh
+    $ vagrant up
+
+After server building and provisioning, you should be able to access your
+instance on the IP address listed in your Rackspace dashboard.
+
+This project still has plenty of rough edges, check out the current issues,
+submit a new one, feedback welcome.
