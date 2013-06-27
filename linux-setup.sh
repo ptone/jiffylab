@@ -33,7 +33,7 @@ useradd jiffylabweb
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 5000
 chown -R jiffylabweb /usr/local/etc/jiffylab/webapp/
 
-docker pull ptone/jiffy-base
+docker pull ptone/jiffylab-base
 # docker build /usr/local/etc/jiffylab/docker-builds/base
 
 echo "
