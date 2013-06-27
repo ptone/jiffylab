@@ -119,5 +119,21 @@ your information, then::
 After server building and provisioning, you should be able to access your
 instance on the IP address listed in your Rackspace dashboard.
 
+Similar or related projects
+---------------------------
+
+* `wakari <http://wakari.io>`_ A really well done and far more complete version
+  of this concept, using the ACE editor, OpenVZ linux containers instead of
+  Docker, and the GateOne shell. The only knocks against it is that it is not
+  free or open source, but hey, well done.
+
+* `notebookcloud <https://notebookcloud.appspot.com/docs>`_ is an app_engine
+  app that will manage the spin up of EC2 instances. Requires you to upload
+  your AWS credentials.
+
+
+* `IPython-hydra <https://github.com/cni/ipython-hydra>`_ a set of scripts to
+  launch IPython notebook processes under dynamically created users.
+
 This project still has plenty of rough edges, check out the current issues,
 submit a new one, feedback welcome.
