@@ -86,8 +86,8 @@ run it on some sort of VM on its own.
 Running on a Mac with Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You will need Vagrant and Virtualbox (note use version 4.2.12, as of this writing, 4.2.14
-has problems with Vagrant).
+You will need Vagrant and Virtualbox (note, 4.2.14
+has problems with Vagrant, 4.2.12 worked, and 4.2.16 fixed the problem).
 
 cd into the jiffylab folder and just run ``vagrant up`` in a terminal. Note
 that with the 'Ubuntu Raring' image used, I found that Vagrant would hang on
