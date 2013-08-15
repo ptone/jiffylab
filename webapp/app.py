@@ -8,7 +8,7 @@ import threading
 import time
 from unicodedata import normalize
 
-from docker import client
+import docker
 from flask import Flask, render_template, session, g, redirect, url_for
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.wtf import Form, TextField
@@ -32,7 +32,10 @@ app.config['DOCKER_ENDPOINT'] = \
 
 Bootstrap(app)
 
-docker_client = client.Client(app.config['DOCKER_ENDPOINT'])
+docker_client = docker.Client(
+        base_url=app.config['DOCKER_ENDPOINT'],
+        version="1.3"
+        )
 
 lock = threading.Lock()
 
