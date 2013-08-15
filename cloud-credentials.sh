@@ -5,11 +5,12 @@
 #   source <this file>
 #   vagrant up provider=<provider name>(from inside the JiffyLab folder)
 
+export PUBLIC_KEY="~/.ssh/id_rsa.pub"
+export PRIVATE_KEY="~/.ssh/id_rsa"
+
 # RackSpace
 export RS_USERNAME=""
 export RS_API_KEY=""
-export RS_PUBLIC_KEY="~/.ssh/id_rsa.pub"
-export RS_PRIVATE_KEY="~/.ssh/id_rsa"
 
 # DigitalOcean
 export DO_CLIENT_ID=""
