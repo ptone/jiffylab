@@ -111,7 +111,11 @@ def check_memory():
     memory limit amount, you have to consider it like a check written to your
     account, you never know when it may be cashed.
     """
-    remaining_budget = initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT
+    # the overbook factor says that each container is unlikely to be using its
+    # full memory limit, and so this is a guestimate of how much you can overbook
+    # your memory
+    overbook_factor = .8
+    remaining_budget = initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT * overbook_factor
     if remaining_budget < MEM_MIN:
         raise ContainerException("Sorry, not enough free memory to start your container")
 
