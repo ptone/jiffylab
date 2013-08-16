@@ -86,8 +86,11 @@ run it on some sort of VM on its own.
 Running on a Mac with Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You will need Vagrant and Virtualbox (note, 4.2.14
-has problems with Vagrant, 4.2.12 worked, and 4.2.16 fixed the problem).
+Note - running this on a cloud based vagrant provider ends up getting set up
+much faster, usually due to the excellent speeds on cloud providers.
+
+You will need Vagrant and Virtualbox (make sure you are using the latest
+version that is known to support vagrant, sometimes virtualbox breaks vagrant).
 
 cd into the jiffylab folder and just run ``vagrant up`` in a terminal. Note
 that with the 'Ubuntu Raring' image used, I found that Vagrant would hang on
@@ -110,14 +113,34 @@ vagrant rackspace plugin::
     $ vagrant box add dummy https://github.com/mitchellh/vagrant-rackspace/raw/master/dummy.box
 
 You will need to set some environment variables for Rackspace - an easy way to
-do this is to follow the directions in ``rackspace-vagrant-env.sh``, fill out
+do this is to follow the directions in ``cloud-credentials.sh``, fill out
 your information, then::
 
-    $ source rackspace-vagrant-env.sh
-    $ vagrant up
+    $ source cloud-credentials.sh
+    $ vagrant up --provider=rackspace
 
 After server building and provisioning, you should be able to access your
 instance on the IP address listed in your Rackspace dashboard.
+
+
+Running on DigitalOcean with Vagrant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Install the `DigitalOcean vagrant provider
+<https://github.com/smdahlen/vagrant-digitalocean>`_ and dummy box::
+
+    $vagrant plugin install vagrant-digitalocean
+    $vagrant box add dummy https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box
+
+    # see notes on DigitalOcean plugin readme if you get errors
+
+Sign up if you haven't already, then grab your client id and api key from
+`DigitalOcean <https://www.digitalocean.com/api_access>`_.
+
+Plug these into ``cloud-credentials.sh``, then::
+
+    $ source cloud-credentials.sh
+    $ vagrant up --provider=digital_ocean
 
 Similar or related projects
 ---------------------------
