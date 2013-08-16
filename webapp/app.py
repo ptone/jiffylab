@@ -111,7 +111,11 @@ def check_memory():
     memory limit amount, you have to consider it like a check written to your
     account, you never know when it may be cashed.
     """
-    if initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT < MEM_MIN:
+    import pdb;pdb.set_trace()
+    remaining_budget = initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT
+    print remaining_budget
+    if remaining_budget < MEM_MIN:
+        print "below min"
         raise ContainerException("Sorry, not enough free memory to start your container")
 
 
@@ -141,45 +145,48 @@ def forget_container(name):
             return False
         return True
 
+def add_portmap(cont):
+    if cont['Ports']:
+        # a bit of a crazy comprehension to turn:
+        # Ports': u'49166->8888, 49167->22'
+        # into a useful dict {8888: 49166, 22: 49167}
+        cont['portmap'] = {int(k): int(v) for v, k in
+                [pair.split('->') for
+                    pair in cont['Ports'].split(',')]}
+
+        # wait until services are up before returning container
+        # TODO this could probably be factored better when next
+        # service added
+        # this should be done via ajax in the browser
+        # this will loop and kill the server if it stalls on docker
+        ipy_wait = shellinabox_wait = True
+        while ipy_wait or shellinabox_wait:
+            if ipy_wait:
+                try:
+                    requests.head("http://{}:{}".format(
+                            app.config['SERVICES_HOST'],
+                            cont['portmap'][8888]))
+                    ipy_wait = False
+                except requests.exceptions.ConnectionError:
+                    pass
+
+            if shellinabox_wait:
+                try:
+                    requests.head("http://{}:{}".format(
+                            app.config['SERVICES_HOST'],
+                            cont['portmap'][4200]))
+                    shellinabox_wait = False
+                except requests.exceptions.ConnectionError:
+                    pass
+            time.sleep(.2)
+            print 'waiting', app.config['SERVICES_HOST']
+        return cont
+
 
 def get_container(cont_id, all=False):
     # TODO catch ConnectionError
     for cont in docker_client.containers(all=all):
         if cont_id in cont['Id']:
-            if cont['Ports']:
-                # a bit of a crazy comprehension to turn:
-                # Ports': u'49166->8888, 49167->22'
-                # into a useful dict {8888: 49166, 22: 49167}
-                cont['portmap'] = {int(k): int(v) for v, k in
-                        [pair.split('->') for
-                         pair in cont['Ports'].split(',')]}
-
-                # wait until services are up before returning container
-                # TODO this could probably be factored better when next
-                # service added
-                # this should be done via ajax in the browser
-                ipy_wait = shellinabox_wait = True
-                while ipy_wait or shellinabox_wait:
-                    if ipy_wait:
-                        try:
-                            requests.head("http://{}:{}".format(
-                                    app.config['SERVICES_HOST'],
-                                    cont['portmap'][8888]))
-                            ipy_wait = False
-                        except requests.exceptions.ConnectionError:
-                            pass
-
-                    if shellinabox_wait:
-                        try:
-                            requests.head("http://{}:{}".format(
-                                    app.config['SERVICES_HOST'],
-                                    cont['portmap'][4200]))
-                            shellinabox_wait = False
-                        except requests.exceptions.ConnectionError:
-                            pass
-                    time.sleep(.2)
-                    print 'waiting', app.config['SERVICES_HOST']
-
             return cont
     return None
 
@@ -189,7 +196,6 @@ def get_or_make_container(email):
     name = slugify(unicode(email)).lower()
     container_id = lookup_container(name)
     if not container_id:
-        check_memory()
         image = get_image()
         cont = docker_client.create_container(
                 image['Id'],
@@ -197,7 +203,6 @@ def get_or_make_container(email):
                 hostname="{}box".format(name.split('-')[0]),
                 )
 
-        docker_client.start(cont['Id'])
         remember_container(name, cont['Id'])
         container_id = cont['Id']
 
@@ -217,6 +222,7 @@ def get_or_make_container(email):
         docker_client.start(container_id)
         # refresh status
         container = get_container(container_id)
+    container = add_portmap(container)
     return container
 
 
@@ -240,6 +246,7 @@ def index():
                 servicehost=app.config['SERVICES_HOST'],
                 )
     except ContainerException as e:
+        print "error"
         return render_template('error.html', error=e)
 
 
