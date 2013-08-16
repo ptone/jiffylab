@@ -111,7 +111,9 @@ def check_memory():
     memory limit amount, you have to consider it like a check written to your
     account, you never know when it may be cashed.
     """
-    if initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT < MEM_MIN:
+    remaining_budget = initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT
+    print remaining_budget
+    if remaining_budget < MEM_MIN:
         raise ContainerException("Sorry, not enough free memory to start your container")
 
 
