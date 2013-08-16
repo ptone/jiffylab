@@ -111,11 +111,8 @@ def check_memory():
     memory limit amount, you have to consider it like a check written to your
     account, you never know when it may be cashed.
     """
-    import pdb;pdb.set_trace()
     remaining_budget = initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT
-    print remaining_budget
     if remaining_budget < MEM_MIN:
-        print "below min"
         raise ContainerException("Sorry, not enough free memory to start your container")
 
 
@@ -246,7 +243,6 @@ def index():
                 servicehost=app.config['SERVICES_HOST'],
                 )
     except ContainerException as e:
-        print "error"
         return render_template('error.html', error=e)
 
 
