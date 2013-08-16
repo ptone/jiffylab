@@ -27,7 +27,7 @@ CONTAINER_STORAGE = "/usr/local/etc/jiffylab/webapp/containers.json"
 SERVICES_HOST = '127.0.0.1'
 BASE_IMAGE = 'ptone/jiffylab-base'
 
-initial_memory_budget = psutil.phymem_usage().free
+initial_memory_budget = psutil.virtual_memory().free  # or can use available for vm
 
 # how much memory should each container be limited to
 CONTAINER_MEM_LIMIT = 1024 * 1024 * 100
