@@ -1,0 +1,20 @@
+{% extends "bootstrap_responsive.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block body_content %}
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#">JiffyLab</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="tab-content">
+        <div class="hero-unit">
+            <h1>Oops...</h1>
+            <p>{{ error }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

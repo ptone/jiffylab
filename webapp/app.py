@@ -38,6 +38,14 @@ docker_client = docker.Client(
 lock = threading.Lock()
 
 
+class ContainerException(Exception):
+    """
+    There was some problem generating or launching a docker container
+    for the user
+    """
+    pass
+
+
 class UserForm(Form):
     # TODO use HTML5 email input
     email = TextField('Email', description='Please enter your email address.')
@@ -68,6 +76,7 @@ def get_image(image_name=BASE_IMAGE):
     for image in docker_client.images():
         if image['Repository'] == image_name and image['Tag'] == 'latest':
             return image
+    raise ContainerException("No image found")
     return None
 
 
@@ -159,7 +168,6 @@ def get_or_make_container(email):
     container_id = lookup_container(name)
     if not container_id:
         image = get_image()
-        # TODO if image is None - we need to bail more gracefully
         cont = docker_client.create_container(
                 image['Id'],
                 None,
@@ -190,22 +198,25 @@ def get_or_make_container(email):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    container = None
-    form = UserForm()
-    print g.user
-    if g.user:
-        # show container:
-        container = get_or_make_container(g.user)
-    else:
-        if form.validate_on_submit():
-            g.user = form.email.data
-            session['email'] = g.user
+    try:
+        container = None
+        form = UserForm()
+        print g.user
+        if g.user:
+            # show container:
             container = get_or_make_container(g.user)
-    return render_template('index.html',
-            container=container,
-            form=form,
-            servicehost=app.config['SERVICES_HOST'],
-            )
+        else:
+            if form.validate_on_submit():
+                g.user = form.email.data
+                session['email'] = g.user
+                container = get_or_make_container(g.user)
+        return render_template('index.html',
+                container=container,
+                form=form,
+                servicehost=app.config['SERVICES_HOST'],
+                )
+    except ContainerException as e:
+        return render_template('error.html', error=e)
 
 
 @app.route('/logout')
