@@ -27,13 +27,11 @@ SERVICES_HOST = '127.0.0.1'
 BASE_IMAGE = 'ptone/jiffylab-base'
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKAPP_SETTINGS', silent=True)
-app.config['DOCKER_ENDPOINT'] = \
-        'http://{}:4243'.format(app.config['SERVICES_HOST'])
 
 Bootstrap(app)
 
 docker_client = docker.Client(
-        base_url=app.config['DOCKER_ENDPOINT'],
+        base_url='unix://var/run/docker.sock',
         version="1.3"
         )
 
@@ -162,7 +160,6 @@ def get_or_make_container(email):
     if not container_id:
         image = get_image()
         # TODO if image is None - we need to bail more gracefully
-
         cont = docker_client.create_container(
                 image['Id'],
                 None,
