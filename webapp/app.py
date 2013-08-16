@@ -141,7 +141,7 @@ def forget_container(name):
             return False
         return True
 
-def wait_services(cont):
+def add_portmap(cont):
     if cont['Ports']:
         # a bit of a crazy comprehension to turn:
         # Ports': u'49166->8888, 49167->22'
@@ -176,6 +176,7 @@ def wait_services(cont):
                     pass
             time.sleep(.2)
             print 'waiting', app.config['SERVICES_HOST']
+        return cont
 
 
 def get_container(cont_id, all=False):
@@ -217,7 +218,7 @@ def get_or_make_container(email):
         docker_client.start(container_id)
         # refresh status
         container = get_container(container_id)
-        wait_services(container)
+        container = add_portmap(container)
     return container
 
 
