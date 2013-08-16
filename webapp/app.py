@@ -218,7 +218,7 @@ def get_or_make_container(email):
         docker_client.start(container_id)
         # refresh status
         container = get_container(container_id)
-        container = add_portmap(container)
+    container = add_portmap(container)
     return container
 
 
