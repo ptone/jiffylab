@@ -32,7 +32,6 @@ Vagrant.configure("2") do |config|
     "sed -i -E 's#^exit 0#[ -x /root/guest_additions.sh ] \\&\\& /root/guest_additions.sh#' /etc/rc.local; " \
     "echo 'Installation of VBox Guest Additions is proceeding in the background.'; " \
     "echo '\"vagrant reload\" can be used in about 2 minutes to activate the new guest additions.'; "
-    override.vm.provision :shell, :path => "linux-setup.sh"
   end
 
   config.vm.provider :rackspace do |rs, override|
@@ -43,7 +42,6 @@ Vagrant.configure("2") do |config|
     rs.api_key  = ENV["RS_API_KEY"]
     rs.flavor   = /512MB/
     rs.image    = /Raring/
-    override.vm.provision :shell, :path => "linux-setup.sh"
   end
 
   config.vm.provider :digital_ocean do |digocean, override|
@@ -53,7 +51,6 @@ Vagrant.configure("2") do |config|
     digocean.client_id = ENV["DO_CLIENT_ID"]
     digocean.image = "Ubuntu 13.04 x64"
     digocean.size = "512MB"
-    override.vm.provision :shell, :path => "linux-setup.sh"
   end
 
   config.vm.provider :aws do |aws, override|
@@ -68,4 +65,5 @@ Vagrant.configure("2") do |config|
     override.ssh.private_key_path = ENV["PRIVATE_KEY"]
   end
 
+  config.vm.provision :shell, :path => "linux-setup.sh"
 end
