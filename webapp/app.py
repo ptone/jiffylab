@@ -217,7 +217,7 @@ def get_or_make_container(email):
         docker_client.start(container_id)
         # refresh status
         container = get_container(container_id)
-        wait_services()
+        wait_services(container)
     return container
 
 
