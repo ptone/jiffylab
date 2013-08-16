@@ -141,45 +141,47 @@ def forget_container(name):
             return False
         return True
 
+def wait_services(cont):
+    if cont['Ports']:
+        # a bit of a crazy comprehension to turn:
+        # Ports': u'49166->8888, 49167->22'
+        # into a useful dict {8888: 49166, 22: 49167}
+        cont['portmap'] = {int(k): int(v) for v, k in
+                [pair.split('->') for
+                    pair in cont['Ports'].split(',')]}
+
+        # wait until services are up before returning container
+        # TODO this could probably be factored better when next
+        # service added
+        # this should be done via ajax in the browser
+        # this will loop and kill the server if it stalls on docker
+        ipy_wait = shellinabox_wait = True
+        while ipy_wait or shellinabox_wait:
+            if ipy_wait:
+                try:
+                    requests.head("http://{}:{}".format(
+                            app.config['SERVICES_HOST'],
+                            cont['portmap'][8888]))
+                    ipy_wait = False
+                except requests.exceptions.ConnectionError:
+                    pass
+
+            if shellinabox_wait:
+                try:
+                    requests.head("http://{}:{}".format(
+                            app.config['SERVICES_HOST'],
+                            cont['portmap'][4200]))
+                    shellinabox_wait = False
+                except requests.exceptions.ConnectionError:
+                    pass
+            time.sleep(.2)
+            print 'waiting', app.config['SERVICES_HOST']
+
 
 def get_container(cont_id, all=False):
     # TODO catch ConnectionError
     for cont in docker_client.containers(all=all):
         if cont_id in cont['Id']:
-            if cont['Ports']:
-                # a bit of a crazy comprehension to turn:
-                # Ports': u'49166->8888, 49167->22'
-                # into a useful dict {8888: 49166, 22: 49167}
-                cont['portmap'] = {int(k): int(v) for v, k in
-                        [pair.split('->') for
-                         pair in cont['Ports'].split(',')]}
-
-                # wait until services are up before returning container
-                # TODO this could probably be factored better when next
-                # service added
-                # this should be done via ajax in the browser
-                ipy_wait = shellinabox_wait = True
-                while ipy_wait or shellinabox_wait:
-                    if ipy_wait:
-                        try:
-                            requests.head("http://{}:{}".format(
-                                    app.config['SERVICES_HOST'],
-                                    cont['portmap'][8888]))
-                            ipy_wait = False
-                        except requests.exceptions.ConnectionError:
-                            pass
-
-                    if shellinabox_wait:
-                        try:
-                            requests.head("http://{}:{}".format(
-                                    app.config['SERVICES_HOST'],
-                                    cont['portmap'][4200]))
-                            shellinabox_wait = False
-                        except requests.exceptions.ConnectionError:
-                            pass
-                    time.sleep(.2)
-                    print 'waiting', app.config['SERVICES_HOST']
-
             return cont
     return None
 
@@ -189,7 +191,6 @@ def get_or_make_container(email):
     name = slugify(unicode(email)).lower()
     container_id = lookup_container(name)
     if not container_id:
-        check_memory()
         image = get_image()
         cont = docker_client.create_container(
                 image['Id'],
@@ -197,7 +198,6 @@ def get_or_make_container(email):
                 hostname="{}box".format(name.split('-')[0]),
                 )
 
-        docker_client.start(cont['Id'])
         remember_container(name, cont['Id'])
         container_id = cont['Id']
 
@@ -217,6 +217,7 @@ def get_or_make_container(email):
         docker_client.start(container_id)
         # refresh status
         container = get_container(container_id)
+        wait_services()
     return container
 
 
