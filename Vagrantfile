@@ -4,7 +4,7 @@
 # this vagrant file specifies details for the virtualbox and rackspace
 # providers. See the linux-setup file for provisioning details.
 #
-BOX_NAME = ENV['BOX_NAME'] || "raring"
+# BOX_NAME = ENV['BOX_NAME'] || "raring"
 # BOX_URI = ENV['BOX_URI'] || "http://files.vagrantup.com/precise64.box"
 # AWS_REGION = ENV['AWS_REGION'] || "us-east-1"
 # AWS_AMI    = ENV['AWS_AMI']    || "ami-d0f89fb9"
@@ -16,8 +16,9 @@ kernel_upgrade = "add-apt-repository -y ppa:ubuntu-x-swat/r-lts-backport; " \
 Vagrant.configure("2") do |config|
 
 
+  config.vm.box = 'jiffylab'
+
   config.vm.provider :virtualbox do |vb, override|
-    override.vm.box = 'raring'
     override.vm.box_url = 'http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box'
     override.vm.network :private_network, ip:"10.10.10.10"
     vb_guest_install = "apt-get install -q -y linux-headers-3.8.0-19-generic dkms; " \
@@ -36,13 +37,35 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :rackspace do |rs, override|
     override.vm.box = "dummy"
-    override.ssh.private_key_path = ENV["RS_PRIVATE_KEY"]
+    override.ssh.private_key_path = ENV["PRIVATE_KEY"]
+    rs.public_key_path = ENV["PUBLIC_KEY"]
     rs.username = ENV["RS_USERNAME"]
     rs.api_key  = ENV["RS_API_KEY"]
-    rs.public_key_path = ENV["RS_PUBLIC_KEY"]
     rs.flavor   = /512MB/
     rs.image    = /Raring/
     override.vm.provision :shell, :path => "linux-setup.sh"
+  end
+
+  config.vm.provider :digital_ocean do |digocean, override|
+    override.vm.box = "dummy"
+    override.ssh.private_key_path = ENV["PRIVATE_KEY"]
+    digocean.public_key_path = ENV["PUBLIC_KEY"]
+    digocean.client_id = ENV["DO_CLIENT_ID"]
+    digocean.image = "Ubuntu 13.04 x64"
+    digocean.size = "512MB"
+    override.vm.provision :shell, :path => "linux-setup.sh"
+  end
+
+  config.vm.provider :aws do |aws, override|
+    aws.access_key_id = ENV["AWS_ACCESS_KEY"]
+    aws.secret_access_key = ENV["AWS_SECRET_KEY"]
+    aws.keypair_name = ENV["AWS_KEYPAIR_NAME"]
+
+    # this is an EBS backed 13.04 x64 image
+    aws.ami = "ami-27f86c26"
+
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = ENV["PRIVATE_KEY"]
   end
 
 end
