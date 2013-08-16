@@ -30,9 +30,9 @@ BASE_IMAGE = 'ptone/jiffylab-base'
 initial_memory_budget = psutil.phymem_usage().free
 
 # how much memory should each container be limited to
-CONTAINER_MEM_LIMIT = 1024 * 100
+CONTAINER_MEM_LIMIT = 1024 * 1024 * 100
 # how much memory must remain in order for a new container to start?
-MEM_MIN = CONTAINER_MEM_LIMIT + 1024 * 20
+MEM_MIN = CONTAINER_MEM_LIMIT + 1024 * 1024 * 20
 
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKAPP_SETTINGS', silent=True)
