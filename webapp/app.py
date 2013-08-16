@@ -13,6 +13,7 @@ from flask import Flask, render_template, session, g, redirect, url_for
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.wtf import Form, TextField
 
+import psutil
 import requests
 
 app = Flask(__name__)
@@ -25,6 +26,14 @@ app.config['SECRET_KEY'] = 'devkey'
 CONTAINER_STORAGE = "/usr/local/etc/jiffylab/webapp/containers.json"
 SERVICES_HOST = '127.0.0.1'
 BASE_IMAGE = 'ptone/jiffylab-base'
+
+initial_memory_budget = psutil.phymem_usage().free
+
+# how much memory should each container be limited to
+CONTAINER_MEM_LIMIT = 1024 * 100
+# how much memory must remain in order for a new container to start?
+MEM_MIN = CONTAINER_MEM_LIMIT + 1024 * 20
+
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKAPP_SETTINGS', silent=True)
 
@@ -92,6 +101,19 @@ def lookup_container(name):
         return containers[name]
     except KeyError:
         return None
+
+
+def check_memory():
+    """
+    Check that we have enough memory "budget" to use for this container
+
+    Note this is hard because while each container may not be using its full
+    memory limit amount, you have to consider it like a check written to your
+    account, you never know when it may be cashed.
+    """
+    if initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT < MEM_MIN:
+        raise ContainerException("Sorry, not enough free memory to start your container")
+
 
 
 def remember_container(name, containerid):
@@ -167,6 +189,7 @@ def get_or_make_container(email):
     name = slugify(unicode(email)).lower()
     container_id = lookup_container(name)
     if not container_id:
+        check_memory()
         image = get_image()
         cont = docker_client.create_container(
                 image['Id'],
@@ -190,6 +213,7 @@ def get_or_make_container(email):
 
     if "Up" not in container['Status']:
         # if the container is not currently running, restart it
+        check_memory()
         docker_client.start(container_id)
         # refresh status
         container = get_container(container_id)
