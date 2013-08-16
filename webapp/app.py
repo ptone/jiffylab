@@ -243,6 +243,7 @@ def index():
                 servicehost=app.config['SERVICES_HOST'],
                 )
     except ContainerException as e:
+        session.pop('email', None)
         return render_template('error.html', error=e)
 
 
