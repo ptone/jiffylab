@@ -14,6 +14,7 @@ RUN apt-get install -y -q curl
 RUN apt-get install -y -q sudo
 RUN apt-get install -y -q python-dev
 RUN apt-get install -y -q python-pip
+RUN apt-get install -y -q python-matplotlib
 
 # gcc and make should be available from python-dev
 # RUN apt-get install -y -q gcc
