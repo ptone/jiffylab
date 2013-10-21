@@ -147,8 +147,8 @@ Similar or related projects
 
 * `wakari <http://wakari.io>`_ A really well done and far more complete version
   of this concept, using the ACE editor, OpenVZ linux containers instead of
-  Docker, and the GateOne shell. The only knocks against it is that it is not
-  free or open source, but hey, well done.
+  Docker, and the GateOne shell. The only knocks against it is that it is
+  commercial (with a free EDU option) and not open source, but hey, well done.
 
 * `notebookcloud <https://notebookcloud.appspot.com/docs>`_ is an app_engine
   app that will manage the spin up of EC2 instances. Requires you to upload
