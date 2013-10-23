@@ -34,6 +34,20 @@ Vagrant.configure("2") do |config|
     "echo '\"vagrant reload\" can be used in about 2 minutes to activate the new guest additions.'; "
   end
 
+  config.vm.provider :aws do |aws, override|
+    override.vm.box = "dummy"
+    aws.access_key_id = ENV["AWS_ACCESS_KEY"]
+    aws.secret_access_key = ["AWS_SECRET_KEY"]
+    aws.region = "us-west-2"
+    aws.keypair_name = ENV["AWS_KEYPAIR_NAME"]
+    # aws.security_groups = ["jiffylab"]
+    aws.ami = "ami-ace67f9c"
+    # aws.ami = "ami-9c47deac"
+    # aws.instance_type = "m2.xlarge"
+    # override.ssh.username = "ubuntu"
+    # override.ssh.private_key_path = ENV["PRIVATE_KEY"]
+  end
+
   config.vm.provider :rackspace do |rs, override|
     override.vm.box = "dummy"
     override.ssh.private_key_path = ENV["PRIVATE_KEY"]
@@ -51,18 +65,6 @@ Vagrant.configure("2") do |config|
     digocean.client_id = ENV["DO_CLIENT_ID"]
     digocean.image = "Ubuntu 13.04 x64"
     digocean.size = "512MB"
-  end
-
-  config.vm.provider :aws do |aws, override|
-    aws.access_key_id = ENV["AWS_ACCESS_KEY"]
-    aws.secret_access_key = ENV["AWS_SECRET_KEY"]
-    aws.keypair_name = ENV["AWS_KEYPAIR_NAME"]
-
-    # this is an EBS backed 13.04 x64 image
-    aws.ami = "ami-27f86c26"
-
-    override.ssh.username = "ubuntu"
-    override.ssh.private_key_path = ENV["PRIVATE_KEY"]
   end
 
   config.vm.provision :shell, :path => "linux-setup.sh"
