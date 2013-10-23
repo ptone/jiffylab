@@ -16,7 +16,7 @@ sudo apt-get install -y -q git
 sudo pip install -U pip
 sudo mkdir -p /usr/local/etc/jiffylab/
 WHO=$(whoami)
-if [ $WHO=='vagrant' -o -d /vagrant/ ]
+if [ $WHO = 'vagrant' -o -d /vagrant/webapp/ ]
     then
         echo "running via vagrant"
         sudo cp -R /vagrant/* /usr/local/etc/jiffylab/
