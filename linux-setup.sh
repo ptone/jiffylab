@@ -27,11 +27,6 @@ fi
 
 sudo pip install -r /usr/local/etc/jiffylab/webapp/requirements.txt
 
-sudo stop dockerd
-sudo echo "
-start on startup
-exec /usr/local/bin/docker -d" > /etc/init/dockerd.conf
-sudo start dockerd
 # users the docker group can access the docker command and remote API
 sudo groupadd docker
 sudo useradd -g docker jiffylabweb
