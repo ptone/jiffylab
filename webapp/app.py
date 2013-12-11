@@ -16,6 +16,7 @@ from flask.ext.wtf import Form, TextField
 import psutil
 import requests
 
+
 app = Flask(__name__)
 
 app.config['BOOTSTRAP_USE_MINIFIED'] = True
@@ -25,9 +26,11 @@ app.config['SECRET_KEY'] = 'devkey'
 
 CONTAINER_STORAGE = "/usr/local/etc/jiffylab/webapp/containers.json"
 SERVICES_HOST = '127.0.0.1'
+SERVICE_PORTS = (4200, 8888)
 BASE_IMAGE = 'ptone/jiffylab-base'
 
-initial_memory_budget = psutil.virtual_memory().free  # or can use available for vm
+# or can use available for VM
+initial_memory_budget = psutil.virtual_memory().free
 
 # how much memory should each container be limited to
 CONTAINER_MEM_LIMIT = 1024 * 1024 * 100
@@ -40,9 +43,9 @@ app.config.from_envvar('FLASKAPP_SETTINGS', silent=True)
 Bootstrap(app)
 
 docker_client = docker.Client(
-        base_url='unix://var/run/docker.sock',
-        version="1.3"
-        )
+    base_url='unix://var/run/docker.sock',
+    version="1.8"
+)
 
 lock = threading.Lock()
 
@@ -67,6 +70,7 @@ def get_current_user():
     if email is not None:
         g.user = email
 
+
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 
@@ -82,8 +86,8 @@ def slugify(text, delim=u'-'):
 
 def get_image(image_name=BASE_IMAGE):
     # TODO catch ConnectionError - requests.exceptions.ConnectionError
-    for image in docker_client.images():
-        if image['Repository'] == image_name and image['Tag'] == 'latest':
+    for image in docker_client.images(image_name):
+        if image_name + ':latest' in image['RepoTags']:
             return image
     raise ContainerException("No image found")
     return None
@@ -112,13 +116,15 @@ def check_memory():
     account, you never know when it may be cashed.
     """
     # the overbook factor says that each container is unlikely to be using its
-    # full memory limit, and so this is a guestimate of how much you can overbook
+    # full memory limit, and so this is a guestimate of how much you can
+    # overbook
     # your memory
     overbook_factor = .8
-    remaining_budget = initial_memory_budget - len(docker_client.containers()) * CONTAINER_MEM_LIMIT * overbook_factor
+    remaining_budget = initial_memory_budget - len(
+        docker_client.containers()) * CONTAINER_MEM_LIMIT * overbook_factor
     if remaining_budget < MEM_MIN:
-        raise ContainerException("Sorry, not enough free memory to start your container")
-
+        raise ContainerException(
+            "Sorry, not enough free memory to start your container")
 
 
 def remember_container(name, containerid):
@@ -140,48 +146,38 @@ def forget_container(name):
         else:
             containers = json.load(open(container_store, 'rb'))
         try:
-            del(containers[name])
+            del (containers[name])
             json.dump(containers, open(container_store, 'wb'))
         except KeyError:
             return False
         return True
 
+
 def add_portmap(cont):
-    if cont['Ports']:
-        # a bit of a crazy comprehension to turn:
-        # Ports': u'49166->8888, 49167->22'
-        # into a useful dict {8888: 49166, 22: 49167}
-        cont['portmap'] = {int(k): int(v) for v, k in
-                [pair.split('->') for
-                    pair in cont['Ports'].split(',')]}
+    container_ports = cont['Ports']
+    if not container_ports:
+        raise Exception("No available ports on container.")
 
-        # wait until services are up before returning container
-        # TODO this could probably be factored better when next
-        # service added
-        # this should be done via ajax in the browser
-        # this will loop and kill the server if it stalls on docker
-        ipy_wait = shellinabox_wait = True
-        while ipy_wait or shellinabox_wait:
-            if ipy_wait:
-                try:
-                    requests.head("http://{}:{}".format(
-                            app.config['SERVICES_HOST'],
-                            cont['portmap'][8888]))
-                    ipy_wait = False
-                except requests.exceptions.ConnectionError:
-                    pass
+    cont['portmap'] = {
+        p['PrivatePort']: p['PublicPort'] for p in container_ports
+        if p['Type'] == 'tcp'
+    }
 
-            if shellinabox_wait:
-                try:
-                    requests.head("http://{}:{}".format(
-                            app.config['SERVICES_HOST'],
-                            cont['portmap'][4200]))
-                    shellinabox_wait = False
-                except requests.exceptions.ConnectionError:
-                    pass
-            time.sleep(.2)
-            print 'waiting', app.config['SERVICES_HOST']
-        return cont
+    # this should be done via ajax in the browser
+    # this will loop and kill the server if it stalls on docker
+    ports = set(SERVICE_PORTS)
+    while len(ports):
+        port = ports.pop()
+        try:
+            requests.head("http://{}:{}".format(
+                app.config['SERVICES_HOST'],
+                cont['portmap'][port]))
+        except requests.exceptions.ConnectionError:
+            ports.add(port)
+
+        time.sleep(.2)
+        print 'waiting', app.config['SERVICES_HOST']
+    return cont
 
 
 def get_container(cont_id, all=False):
@@ -199,10 +195,11 @@ def get_or_make_container(email):
     if not container_id:
         image = get_image()
         cont = docker_client.create_container(
-                image['Id'],
-                None,
-                hostname="{}box".format(name.split('-')[0]),
-                )
+            image['Id'],
+            None,
+            hostname="{}box".format(name.split('-')[0]),
+            ports=list(SERVICE_PORTS)
+        )
 
         remember_container(name, cont['Id'])
         container_id = cont['Id']
@@ -217,10 +214,10 @@ def get_or_make_container(email):
         # TODO DANGER- could have a over-recursion guard?
         return get_or_make_container(email)
 
-    if "Up" not in container['Status']:
+    if not container['Status'].startswith("Up"):
         # if the container is not currently running, restart it
         check_memory()
-        docker_client.start(container_id)
+        docker_client.start(container_id, publish_all_ports=True)
         # refresh status
         container = get_container(container_id)
     container = add_portmap(container)
@@ -242,10 +239,10 @@ def index():
                 session['email'] = g.user
                 container = get_or_make_container(g.user)
         return render_template('index.html',
-                container=container,
-                form=form,
-                servicehost=app.config['SERVICES_HOST'],
-                )
+                               container=container,
+                               form=form,
+                               servicehost=app.config['SERVICES_HOST'],
+        )
     except ContainerException as e:
         session.pop('email', None)
         return render_template('error.html', error=e)

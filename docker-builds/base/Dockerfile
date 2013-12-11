@@ -37,7 +37,6 @@ RUN cd shellinabox-2.14 && ./configure && make && make install
 RUN mkdir /etc/shellinabox-css && cp shellinabox-2.14/shellinabox/*.css /etc/shellinabox-css/
 RUN cd .. && rm -r shellinabox*
 ADD ./supervisor/shellinabox.conf /etc/supervisor.d/shellinabox.conf
-EXPOSE 4200
 
 # supervisor process manager
 RUN pip install supervisor
@@ -48,7 +47,6 @@ ADD ./ipython-conf.tgz /home/user/
 RUN chown -R user /home/user/ipython-conf/
 ENV IPYTHONDIR /ipython-config/
 ADD ./supervisor/ipynotebook.conf /etc/supervisor.d/ipynotebook.conf
-EXPOSE 8888
 
 # sshd - to move out of base
 # RUN apt-get install -y -q openssh-server
