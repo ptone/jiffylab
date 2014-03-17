@@ -199,6 +199,7 @@ def get_or_make_container(email):
                 image['Id'],
                 None,
                 hostname="{user}box".format(user=name.split('-')[0]),
+                mem_limit=CONTAINER_MEM_LIMIT,
                 ports=[8888, 4200],
                 )
 
