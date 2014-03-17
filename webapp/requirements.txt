@@ -1,7 +1,7 @@
-git+https://github.com/dotcloud/docker-py#egg=docker
+docker-py==0.3.0
 Flask==0.10.1
 Flask-Bootstrap==2.3.1-1
 Flask-WTF==0.8.3
 WTForms==1.0.4
-requests==1.2.3
+requests==2.2.1
 psutil
