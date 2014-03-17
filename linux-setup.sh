@@ -8,8 +8,7 @@
 # of the provisioning user by vagrant.
 
 sudo apt-get install -q -y curl
-# if you are paying attention, no get.docker.io does NOT use https
-curl get.docker.io | sudo sh -x
+curl https://get.docker.io | sudo sh -x
 sudo apt-get install -y -q python-all-dev
 sudo apt-get install -y -q python-pip
 sudo apt-get install -y -q git
