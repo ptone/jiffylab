@@ -14,6 +14,7 @@ RUN apt-get install -y -q curl
 RUN apt-get install -y -q sudo
 RUN apt-get install -y -q python-dev
 RUN apt-get install -y -q python-pip
+RUN apt-get install -y -q git-core
 
 # gcc and make should be available from python-dev
 # RUN apt-get install -y -q gcc
@@ -44,6 +45,8 @@ RUN pip install supervisor
 ADD supervisor/supervisord.conf /etc/supervisord.conf
 
 RUN pip install ipython[notebook]
+RUN pip install ez_setup
+RUN pip install ipythonblocks
 ADD ./ipython-conf.tgz /home/user/
 RUN chown -R user /home/user/ipython-conf/
 ENV IPYTHONDIR /ipython-config/
