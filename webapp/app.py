@@ -39,10 +39,9 @@ app.config.from_envvar('FLASKAPP_SETTINGS', silent=True)
 
 Bootstrap(app)
 
-docker_client = docker.Client(
-        base_url='unix://var/run/docker.sock',
-        version="1.3"
-        )
+docker_client = docker.Client(base_url='unix://var/run/docker.sock',
+                  version='1.6',
+                  timeout=10)
 
 lock = threading.Lock()
 
