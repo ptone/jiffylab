@@ -199,6 +199,7 @@ def get_or_make_container(email):
                 image['Id'],
                 None,
                 hostname="{user}box".format(user=name.split('-')[0]),
+                ports=[8888, 4200],
                 )
 
         remember_container(name, cont['Id'])
@@ -217,7 +218,7 @@ def get_or_make_container(email):
     if "Up" not in container['Status']:
         # if the container is not currently running, restart it
         check_memory()
-        docker_client.start(container_id)
+        docker_client.start(container_id, publish_all_ports=True)
         # refresh status
         container = get_container(container_id)
     container = add_portmap(container)
