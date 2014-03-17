@@ -161,18 +161,18 @@ def add_portmap(cont):
         while ipy_wait or shellinabox_wait:
             if ipy_wait:
                 try:
-                    requests.head("http://{}:{}".format(
-                            app.config['SERVICES_HOST'],
-                            cont['portmap'][8888]))
+                    requests.head("http://{host}:{port}".format(
+                            host=app.config['SERVICES_HOST'],
+                            port=cont['portmap'][8888]))
                     ipy_wait = False
                 except requests.exceptions.ConnectionError:
                     pass
 
             if shellinabox_wait:
                 try:
-                    requests.head("http://{}:{}".format(
-                            app.config['SERVICES_HOST'],
-                            cont['portmap'][4200]))
+                    requests.head("http://{host}:{port}".format(
+                            host=app.config['SERVICES_HOST'],
+                            port=cont['portmap'][4200]))
                     shellinabox_wait = False
                 except requests.exceptions.ConnectionError:
                     pass
@@ -198,7 +198,7 @@ def get_or_make_container(email):
         cont = docker_client.create_container(
                 image['Id'],
                 None,
-                hostname="{}box".format(name.split('-')[0]),
+                hostname="{user}box".format(user=name.split('-')[0]),
                 )
 
         remember_container(name, cont['Id'])
