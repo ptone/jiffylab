@@ -150,9 +150,7 @@ def add_portmap(cont):
         # a bit of a crazy comprehension to turn:
         # Ports': u'49166->8888, 49167->22'
         # into a useful dict {8888: 49166, 22: 49167}
-        cont['portmap'] = {int(k): int(v) for v, k in
-                [pair.split('->') for
-                    pair in cont['Ports'].split(',')]}
+        cont['portmap'] = dict([(p['PrivatePort'], p['PublicPort']) for p in cont['Ports']])
 
         # wait until services are up before returning container
         # TODO this could probably be factored better when next
