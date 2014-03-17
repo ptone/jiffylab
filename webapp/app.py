@@ -258,4 +258,7 @@ def logout():
 
 
 if '__main__' == __name__:
-    app.run(debug=True, host='0.0.0.0')
+    # app.run(debug=True, host='0.0.0.0')
+    pass
+
+
