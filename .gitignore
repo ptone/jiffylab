@@ -1,2 +1,4 @@
 containers.json
 .vagrant/**
+.idea
+*.py[oc]
