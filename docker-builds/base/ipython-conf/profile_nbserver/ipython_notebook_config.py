@@ -360,7 +360,7 @@ c.NotebookApp.open_browser = False
 # message spec. The Session will handle serialization/deserialization, security,
 # and metadata.
 # 
-# Sessions support configurable serialiization via packer/unpacker traits, and
+# Sessions support configurable serialization via packer/unpacker traits, and
 # signing with HMAC digests via the key/keyfile traits.
 # 
 # Parameters ----------
@@ -416,7 +416,7 @@ c.NotebookApp.open_browser = False
 # MappingKernelManager configuration
 #------------------------------------------------------------------------------
 
-# A KernelManager that handles notebok mapping and HTTP error handling
+# A KernelManager that handles notebook mapping and HTTP error handling
 
 # MappingKernelManager will inherit config from: MultiKernelManager
 
